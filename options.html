@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Tab Sorter Settings</title>
+    <style>
+        /* --- THEME DEFINITIONS (CSS Variables) --- */
+        :root {
+            /* DARK MODE is now the default */
+            --bg-color: #2b2b2b;
+            --text-color: #dcdcdc;
+            --secondary-text-color: #999999;
+            --border-color: #444444;
+            --input-bg-color: #3c3c3c;
+            --item-bg-color: #383838;
+            --item-dragging-bg-color: #4a4a6a;
+            --danger-bg-color: #4d2e2e;
+            --danger-border-color: #ff5555;
+            --danger-text-color: #ff7777;
+        }
+
+        body[data-theme="light"] {
+            /* LIGHT MODE is now the optional theme */
+            --bg-color: #ffffff;
+            --text-color: #222222;
+            --secondary-text-color: #666666;
+            --border-color: #dddddd;
+            --input-bg-color: #ffffff;
+            --item-bg-color: #f9f9f9;
+            --item-dragging-bg-color: #eef;
+            --danger-bg-color: #fff5f5;
+            --danger-border-color: #e44;
+            --danger-text-color: #c33;
+        }
+
+        /* --- GENERAL STYLES (Unchanged, they just use the variables) --- */
+        body {
+            font-family: sans-serif;
+            max-width: 600px;
+            margin: 2em auto;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        h1, h2, p, label { color: var(--text-color); }
+        p { color: var(--secondary-text-color); }
+        h2 { border-bottom: 1px solid var(--border-color); padding-bottom: 0.3em; margin-top: 2.5em; }
+        .setting-group { margin-bottom: 1.5em; }
+        .setting-group label { display: block; font-weight: bold; margin-bottom: 0.5em; }
+        select, input[type="text"] { padding: 8px; font-size: 1em; width: 100%; box-sizing: border-box; background-color: var(--input-bg-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 4px; }
+        button, input[type="submit"] { border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        #add-favorite-btn { background-color: #0a84ff; color: white; }
+        #sort-order-list { list-style: none; padding: 0; border: 1px solid var(--border-color); border-radius: 4px; }
+        #sort-order-list li { padding: 12px; background-color: var(--item-bg-color); border-bottom: 1px solid var(--border-color); cursor: grab; user-select: none; display: flex; align-items: center; gap: 10px; }
+        #sort-order-list li:last-child { border-bottom: none; }
+        #sort-order-list li.dragging { opacity: 0.5; background: var(--item-dragging-bg-color); }
+        #sort-order-list li::before { content: '::'; color: #aaa; font-weight: bold; }
+        #favorites-list { list-style: none; padding: 0; }
+        #favorites-list li { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid var(--border-color); }
+        #favorites-list button { background: #e44; color: white; padding: 5px 10px; }
+        #add-favorite-form { display: flex; gap: 10px; margin-bottom: 2em; }
+        #favorite-url-input { flex-grow: 1; }
+        .danger-zone { margin-top: 3em; padding: 1em; border: 2px solid var(--danger-border-color); border-radius: 4px; background-color: var(--danger-bg-color); }
+        .danger-zone h2 { color: var(--danger-text-color); border-color: var(--danger-border-color); }
+        .danger-zone p { color: var(--danger-text-color); }
+        .danger-zone button { background-color: var(--danger-border-color); color: white; font-size: 1em; }
+        .danger-zone button:hover { opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <!-- (The body content is completely unchanged) -->
+    <h1>Automatic Tab Sorter Settings</h1>
+    <h2>Appearance</h2>
+    <div class="setting-group">
+        <label><input type="checkbox" id="theme-toggle-checkbox"> Dark Mode</label>
+    </div>
+    <h2>Sorting Priority</h2>
+    <p>Drag and drop to change the sorting order of tab groups.</p>
+    <ul id="sort-order-list">
+        <li draggable="true" data-category="special">Special Tabs (e.g., about:config)</li>
+        <li draggable="true" data-category="favorites">Favorite Tabs</li>
+        <li draggable="true" data-category="normal">Normal Tabs</li>
+        <li draggable="true" data-category="newtab">New Tab (about:newtab)</li>
+    </ul>
+    <div class="setting-group" style="margin-top: 1.5em;">
+        <label><input type="checkbox" id="exclude-special-checkbox"> Exclude Special Tabs from sorting</label>
+        <label><input type="checkbox" id="limit-newtab-checkbox"> Only allow one "New Tab" to be open</label>
+    </div>
+    <h2>Sorting Direction</h2>
+    <div class="setting-group">
+        <label for="favorite-sort-select">Favorites Sort Order</label>
+        <select id="favorite-sort-select">
+            <option value="a-z">Top to Bottom (A-Z)</option>
+            <option value="z-a">Bottom to Top (Z-A)</option>
+        </select>
+    </div>
+    <div class="setting-group">
+        <label for="regular-sort-select">Normal & Special Tabs Sort Order</label>
+        <select id="regular-sort-select">
+            <option value="a-z">Top to Bottom (A-Z)</option>
+            <option value="z-a">Bottom to Top (Z-A)</option>
+        </select>
+    </div>
+    <h2>Favorite URLs</h2>
+    <p>Add URLs to be treated as favorites.</p>
+    <form id="add-favorite-form">
+        <input type="text" id="favorite-url-input" placeholder="e.g., youtube.com" required>
+        <button type="submit" id="add-favorite-btn">Add Favorite</button>
+    </form>
+    <ul id="favorites-list"></ul>
+    <div class="danger-zone">
+        <h2>Manual Actions</h2>
+        <p><strong>Warning:</strong> This action is permanent and cannot be undone.</p>
+        <button id="remove-duplicates-btn">Remove All Duplicate Tabs</button>
+    </div>
+    <script src="options.js"></script>
+</body>
+</html>

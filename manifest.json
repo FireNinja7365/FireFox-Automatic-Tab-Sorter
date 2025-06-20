@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Automatic Tab Sorter",
+  "version": "1.2",
+  "description": "Automatically sorts tabs by URL in alphabetical order, with favorites support.",
+
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
+
+  "background": {
+    "scripts": ["background.js"]
+  },
+
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+
+  "action": {
+    "default_icon": {
+      "48": "icons/sorter-48.png"
+    },
+    "default_title": "Tab Sorter Settings"
+  },
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "https://github.com/FireNinja7365/FireFox-Automatic-Tab-Sorter/",
+      "strict_min_version": "109.0"
+    }
+  }
+}
